@@ -1,0 +1,19 @@
+---
+#Simple tasks to enable a web server, enable an NTP server, and enable postfix.
+- name: play to setup multiple tasks
+  hosts: web01.example.com
+  tasks:
+  - name: web server is enabled
+    service:
+      name: httpd
+      enabled: true
+      
+  - name: NTP server is enabled
+    service:
+      name: chronyd
+      enabled: true
+
+  - name: Postfix is enabled
+    service:
+      name: postfix
+      enabled: true
