@@ -1,0 +1,46 @@
+---
+# Simple playbook to test website connectivity with firewall rules
+- name: Enable web and firewall package, test a website index.html page, and permit internet services
+  hosts: website.example.com
+  become: yes
+  tasks:
+    - name: latest version of httpd and firewalld installed
+      yum:
+        name:
+          - httpd
+          - firewalld
+        state: latest
+        
+    - name: test html page is installed
+      copy:
+        content: "Welcome to the example.com homepage!\n"
+        dest: /var/www/html/index.html
+        
+    - name: firewalld enabled and running
+      service:
+        name: firewalld
+        enabled: true
+        state: started
+        
+    - name: firewalld permits http service
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
+        
+    - name: httpd enabled and running
+        service:
+          name: httpd
+          enabled: true
+          state: started
+     
+- name: Test website homepage
+  hosts: localhost
+  become: no
+  tasks:
+    - name: connect to intranet web server
+      uri:
+        url: http://website.example.com
+        return_content: yes
+        status_code: 200
